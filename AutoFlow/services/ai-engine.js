@@ -207,9 +207,12 @@ async function callAI(systemPrompt, messages, temperature = 0.1) {
 
 async function convertToFlow(userMessage, piecesRegistry, conversationHistory = []) {
   const catalog = piecesRegistry.getCompactListForAI();
-  // Limit catalog to avoid exceeding context window
-  const limitedCatalog = catalog.slice(0, 50);
-  const fullPrompt = SYSTEM_PROMPT + `\n\n## PIECES_CATALOG (${catalog.length} total, showing top ${limitedCatalog.length}):\n${JSON.stringify(limitedCatalog, null, 2)}`;
+  // Only send top 20 most useful pieces to fit Groq free tier (12K token limit)
+  const topPieces = ['schedule', 'webhook', 'http', 'gmail', 'slack', 'google-sheets', 'openai', 'discord', 'telegram', 'notion', 'airtable', 'hubspot', 'whatsapp', 'google-calendar', 'google-drive', 'linkedin', 'twitter', 'trello', 'email', 'sendgrid'];
+  const limitedCatalog = catalog.filter(p => topPieces.some(t => p.name.includes(t))).slice(0, 20);
+  // If no match, take first 20
+  const finalCatalog = limitedCatalog.length > 5 ? limitedCatalog : catalog.slice(0, 20);
+  const fullPrompt = SYSTEM_PROMPT + `\n\n## PIECES_CATALOG (${finalCatalog.length} pieces):\n${JSON.stringify(finalCatalog)}`;
 
   const messages = [...conversationHistory, { role: 'user', content: userMessage }];
   
@@ -268,7 +271,7 @@ ${JSON.stringify(failedJson, null, 2)}
 
 الطلب: ${originalMsg}`;
 
-  const fullPrompt = SYSTEM_PROMPT + `\n\n## PIECES_CATALOG:\n${JSON.stringify(catalog, null, 2)}`;
+  const fullPrompt = SYSTEM_PROMPT + `\n\n## PIECES_CATALOG:\n${JSON.stringify(catalog.slice(0, 20))}`;
   const result = await callAI(fullPrompt, [{ role: 'user', content: prompt }], 0);
   const match = result.text.trim().match(/\{[\s\S]*\}/);
 
