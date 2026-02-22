@@ -111,9 +111,11 @@ class FlowBuilder {
         packageType: 'REGISTRY',
         triggerName: trigger.triggerName || 'cron_expression',
         input: {
-          cronExpression: trigger.input.cronExpression || '0 8 * * *',
-          timezone: trigger.input.timezone || 'Asia/Riyadh'
-        }
+          cronExpression: trigger.input?.cronExpression || '0 8 * * *',
+          timezone: trigger.input?.timezone || 'Asia/Riyadh'
+        },
+        inputUiInfo: {},
+        propertySettings: {}
       };
     }
 
@@ -124,7 +126,9 @@ class FlowBuilder {
         pieceType: 'OFFICIAL',
         packageType: 'REGISTRY',
         triggerName: 'catch_request',
-        input: trigger.input || {}
+        input: trigger.input || {},
+        inputUiInfo: {},
+        propertySettings: {}
       };
     }
 
@@ -135,7 +139,9 @@ class FlowBuilder {
       pieceType: 'OFFICIAL',
       packageType: 'REGISTRY',
       triggerName: trigger.triggerName,
-      input: trigger.input || {}
+      input: trigger.input || {},
+      inputUiInfo: {},
+      propertySettings: {}
     };
   }
 
@@ -179,7 +185,8 @@ class FlowBuilder {
           code: action.code || action.input?.code || '// Add your code here',
           ...(action.input || {})
         },
-        inputUiInfo: {}
+        inputUiInfo: {},
+        propertySettings: {}
       };
     }
 
@@ -189,7 +196,9 @@ class FlowBuilder {
       pieceType: 'OFFICIAL',
       packageType: 'REGISTRY',
       actionName: action.actionName,
-      input: action.input || {}
+      input: action.input || {},
+      inputUiInfo: {},
+      propertySettings: {}
     };
   }
 
